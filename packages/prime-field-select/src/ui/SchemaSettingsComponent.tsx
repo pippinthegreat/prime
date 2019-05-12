@@ -9,6 +9,7 @@ type Props = PrimeFieldProps & {
     required: boolean;
     enum: boolean;
     multiple: boolean;
+    returnKey: boolean;
   };
 };
 
@@ -98,6 +99,15 @@ export class SchemaSettingsComponent extends React.PureComponent<Props> {
           })(<Switch />)}
           <label htmlFor="options.enum" style={{ marginLeft: 8 }}>
             Enum
+          </label>
+        </Form.Item>
+        <Form.Item style={{ marginBottom: 0 }}>
+          {form.getFieldDecorator('options.returnKey', {
+            valuePropName: 'checked',
+            initialValue: options.returnKey,
+          })(<Switch />)}
+          <label htmlFor="options.returnKey" style={{ marginLeft: 8 }}>
+            Return key instead of value
           </label>
         </Form.Item>
         <Form.Item label="Items">

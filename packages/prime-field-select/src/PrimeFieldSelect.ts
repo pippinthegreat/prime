@@ -13,6 +13,7 @@ interface Options {
   required: boolean;
   enum: boolean;
   multiple: boolean;
+  returnKey: boolean;
 }
 
 export class PrimeFieldSelect extends PrimeField {
@@ -24,6 +25,7 @@ export class PrimeFieldSelect extends PrimeField {
     required: false,
     enum: false,
     multiple: false,
+    returnKey: false,
   };
 
   public EnumType: GraphQLEnumType;
@@ -41,7 +43,7 @@ export class PrimeFieldSelect extends PrimeField {
     return this.options.items.reduce((acc, item) => {
       if (item && item.key && item.key !== '' && item.value) {
         if (item.key.match(/^[_a-zA-Z][_a-zA-Z0-9]*$/)) {
-          acc[item.key] = { value: item.value };
+          acc[item.key] = { key: item.key, value: item.value };
         }
       }
       return acc;
@@ -49,7 +51,7 @@ export class PrimeFieldSelect extends PrimeField {
   }
 
   public outputType(context: PrimeFieldContext) {
-    const { enum: enumeration, multiple } = this.options;
+    const { enum: enumeration, multiple, returnKey } = this.options;
     this.ensureEnumType(context);
 
     if (this.EnumType.getValues().length === 0) {
@@ -66,7 +68,9 @@ export class PrimeFieldSelect extends PrimeField {
         if (!value && !enumeration) {
           return root[info.fieldName];
         }
-
+        if (returnKey) {
+          return value.key;
+        }
         return value.value;
       },
     };
