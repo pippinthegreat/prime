@@ -19,6 +19,7 @@ interface Args {
 
 export const createAllDocumentResolver = async ({
   schema,
+  schemas,
   fields,
   documentTransformer,
 }: SchemaPayload) => {
@@ -80,8 +81,8 @@ export const createAllDocumentResolver = async ({
         sqb.andWhere(`d.deletedAt IS NULL`);
 
         (args.where || []).map(n => {
-          documentWhereBuilder('Document', fields, qb, n);
-          documentWhereBuilder('d', fields, sqb, n);
+          documentWhereBuilder('Document', fields, schemas, qb, n);
+          documentWhereBuilder('d', fields, schemas, sqb, n);
         });
 
         sqb.orderBy({ 'd.createdAt': 'DESC' }).limit(1);

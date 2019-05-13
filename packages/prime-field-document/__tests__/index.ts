@@ -45,7 +45,18 @@ describe('PrimeFieldDocument', () => {
     expect(typeof PrimeFieldDocument).toBe('function');
   });
 
-  it('should have null where type', async () => {
+  it('should have a where type when there is a document field', async () => {
+    test = createTestField({ schemaIds: ['s1'] });
+    expect(await test.whereType(createContext())).toBeTruthy();
+  });
+
+  it('should have no where type when there is no document field', async () => {
+    test = createTestField();
+    expect(await test.whereType(createContext())).toBeNull();
+  });
+
+  it('should have no where type when there is more than one document field', async () => {
+    test = createTestField({ schemaIds: ['s1', 's2'] });
     expect(await test.whereType(createContext())).toBeNull();
   });
 

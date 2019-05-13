@@ -1,5 +1,7 @@
-import { Brackets, WhereExpression } from 'typeorm';
+import { Brackets } from 'typeorm';
 import { SchemaField } from '../../../entities/SchemaField';
+import { Schema } from '../../../entities/Schema';
+import { Document } from '../../../entities/Document';
 
 interface Where {
   gt?: any;
@@ -33,7 +35,8 @@ const modes = { OR: 'orWhere', AND: 'andWhere' };
 export const documentWhereBuilder = (
   tableName: string,
   fields: SchemaField[],
-  queryBuilder: WhereExpression,
+  schemas: Schema[],
+  queryBuilder,
   where: Where | NestedWhere,
   scope: string[] = [],
   mode: string = 'andWhere'
@@ -43,7 +46,15 @@ export const documentWhereBuilder = (
       queryBuilder[mode](
         new Brackets(builder => {
           whereOrValue.forEach(innerWhere =>
-            documentWhereBuilder(tableName, fields, builder, innerWhere, scope, modes[fieldName])
+            documentWhereBuilder(
+              tableName,
+              fields,
+              schemas,
+              builder,
+              innerWhere,
+              scope,
+              modes[fieldName]
+            )
           );
           return builder;
         })
@@ -68,9 +79,34 @@ export const documentWhereBuilder = (
           targetField.name === fieldName &&
           targetField.parentFieldId === (scope[scope.length - 1] || null)
       );
-      if (field && field.primeField) {
+      if (field && field.type === 'document') {
+        const schemaId = field.options.schemaId || field.options.schemaIds[0];
+
+        const schema = schemas.find(schema => schema.id === schemaId);
+
+        if (schema) {
+          const sqb = queryBuilder
+            .subQuery()
+            .select(`concat("schemaId"::text, ',', "documentId"::text) as result`)
+            .from(Document, 'f')
+            .where(`"f"."schemaId" = :subSchemaId`, { subSchemaId: schema.id });
+
+          documentWhereBuilder('f', schema.fields, schemas, sqb, whereOrValue);
+
+          const column = `"${tableName}"."data"->>'${field.id}'`;
+          queryBuilder[mode](`${column} IN (${sqb.getQuery()})`);
+        }
+      } else if (field && field.primeField) {
         const nextScope = [...scope, field.id];
-        documentWhereBuilder(tableName, fields, queryBuilder, whereOrValue, nextScope, mode);
+        documentWhereBuilder(
+          tableName,
+          fields,
+          schemas,
+          queryBuilder,
+          whereOrValue,
+          nextScope,
+          mode
+        );
       }
     }
   }

@@ -1,11 +1,13 @@
 import { PrimeField, PrimeFieldContext } from '@primecms/field';
 import {
   GraphQLID,
+  GraphQLInputObjectType,
   GraphQLList,
   GraphQLObjectType,
   GraphQLString,
   GraphQLUnionType,
 } from 'graphql';
+import { camelCase, upperFirst } from 'lodash';
 
 interface Options {
   schemaIds: string[];
@@ -120,5 +122,43 @@ export class PrimeFieldDocument extends PrimeField {
     return {
       type: options.multiple ? new GraphQLList(GraphQLID) : GraphQLID,
     };
+  }
+
+  public async whereType(context: PrimeFieldContext) {
+    const name = context.uniqueTypeName(
+      `${context.name}_${upperFirst(camelCase(this.schemaField.name))}`
+    );
+
+    const { options } = this.schemaField;
+
+    // can't input with union types, ignore document fields with more than one schema
+    if (!options.schemaIds || options.schemaIds.length !== 1) {
+      return null;
+    }
+
+    const fields = {};
+    const schemaId = options.schemaIds[0];
+
+    const schema = context.schemas.find(s => s.id === schemaId);
+    if (schema) {
+      for (const field of schema.fields) {
+        if (field.primeField) {
+          const WhereType = await field.primeField.whereType({
+            ...context,
+            name,
+          });
+          if (WhereType) {
+            fields[field.name] = {
+              type: WhereType,
+            };
+          }
+        }
+      }
+    }
+
+    return new GraphQLInputObjectType({
+      name,
+      fields,
+    });
   }
 }
