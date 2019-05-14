@@ -53,6 +53,12 @@ export const createExternal = async (connection: Connection) => {
     }
 
     schema.fields = await documentTransformer.getFields(schema);
+  }
+
+  for (const schema of schemas) {
+    if (schema.variant === SchemaVariant.Template) {
+      continue;
+    }
 
     const { name, fields } = schema;
     const payload = { schema, schemas, fields, name, resolvers, types, documentTransformer };
