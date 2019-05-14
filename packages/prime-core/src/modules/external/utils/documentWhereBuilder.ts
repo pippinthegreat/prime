@@ -93,8 +93,13 @@ export const documentWhereBuilder = (
 
           documentWhereBuilder('f', schema.fields, schemas, sqb, whereOrValue);
 
-          const column = `"${tableName}"."data"->>'${field.id}'`;
-          queryBuilder[mode](`${column} IN (${sqb.getQuery()})`);
+          if (field.options.multiple) {
+            const column = `"${tableName}"."data"->'${field.id}'`;
+            queryBuilder[mode](`${column} ?| array(${sqb.getQuery()})`);
+          } else {
+            const column = `"${tableName}"."data"->>'${field.id}'`;
+            queryBuilder[mode](`${column} IN (${sqb.getQuery()})`);
+          }
         }
       } else if (field && field.primeField) {
         const nextScope = [...scope, field.id];
