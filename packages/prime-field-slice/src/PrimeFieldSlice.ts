@@ -120,7 +120,7 @@ export class PrimeFieldSlice extends PrimeField {
     const sliceFieldType = GraphQLUnionInputType({
       name: `${context.schema.name}_${this.schemaField.name}${upperFirst(actionName)}Input`,
       inputTypes: sliceTypes.map(s => s.type),
-      typeKey: '___inputname',
+      typeKey: '__inputname',
       resolveType(name) {
         const sliceType = sliceTypes.find(n => n.name === name);
         if (sliceType) {

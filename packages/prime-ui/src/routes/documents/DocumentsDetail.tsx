@@ -168,10 +168,16 @@ export class DocumentsDetail extends React.Component<IProps> {
                 return Object.entries(vals || {}).reduce((acc: any, [key, value]) => {
                   if (isObject(value)) {
                     const entries = Object.entries(value || {});
+                    // array like object of values, with index keys
                     const indexes = entries.filter(([k]) => Number.isInteger(Number(k)));
-                    const isArrayLike = indexes.length > 0;
-                    if (isArrayLike) {
+                    if (indexes.length > 0) {
                       acc[key] = indexes.map(([k, v]) => parse(v));
+                      return acc;
+                    }
+                    // array like object of values, with uuid keys
+                    const uuids = entries.filter(([k, v]) => v.__uuid != null);
+                    if (uuids.length > 0) {
+                      acc[key] = uuids.map(([k, v]) => parse(v));
                       return acc;
                     }
                   }
@@ -186,7 +192,7 @@ export class DocumentsDetail extends React.Component<IProps> {
 
             Object.entries(parsed).forEach(([key, value]) => {
               if (Array.isArray(value) && value.length > 0) {
-                if (value[0].__index) {
+                if (value[0].__index != null) {
                   value.sort((a, b) => Number(a.__index) - Number(b.__index));
                 }
               }

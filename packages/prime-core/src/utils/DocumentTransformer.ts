@@ -50,6 +50,7 @@ export class DocumentTransformer {
         return {};
       }
       output.__inputname = data.__inputname;
+      output.__uuid = data.__uuid;
     }
 
     for (const field of fields) {

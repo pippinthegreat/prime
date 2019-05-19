@@ -29,7 +29,8 @@ export const createSchemaInputType = async (
     const typeFields: { [key: string]: any } = {};
 
     if (schema.variant === SchemaVariant.Slice) {
-      typeFields.___inputname = { type: GraphQLString };
+      typeFields.__inputname = { type: GraphQLString };
+      typeFields.__uuid = { type: GraphQLString };
     }
 
     for (const field of fields) {

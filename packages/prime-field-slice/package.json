@@ -39,8 +39,9 @@
     "graphql-type-json": "^0.2.1",
     "graphql-union-input-type": "0.4.0",
     "lodash": "^4.17.11",
-    "react": "^16.8.0-alpha.1",
-    "react-dom": "^16.8.0-alpha.1"
+    "react": "16.8.0-alpha.1",
+    "react-beautiful-dnd": "10.0.0",
+    "react-dom": "16.8.0-alpha.1"
   },
   "devDependencies": {
     "@types/graphql": "14.2.0",

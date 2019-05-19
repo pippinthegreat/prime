@@ -182,7 +182,7 @@
 
   .prime-slice {
     margin: -@spacing;
-    margin-bottom: 16px;
+    margin-bottom: 0;
     background-color: #f0f2f5;
 
     > .ant-form-item-label {
@@ -228,6 +228,12 @@
       padding: @spacing;
       padding-bottom: 0;
     }
+
+    &.prime-slice-item-collapsed {
+      .ant-card-body {
+        padding-bottom: @spacing;
+      }
+    }
   }
 
   .prime-slice-item-actions {
@@ -247,6 +253,10 @@
     &:hover {
       box-shadow: 0 2px 1px rgba(0, 0, 0, 0.025);
     }
+  }
+
+  .prime-slice-item-button-holder {
+    display: inline-block;
   }
 
   .prime-slice-item-button {

@@ -2,16 +2,21 @@ import { PrimeFieldProps, SchemaVariant } from '@primecms/field';
 import { Form, Select, Switch } from 'antd';
 import React from 'react';
 
+type Props = PrimeFieldProps & {
+  options: {
+    multiple?: boolean;
+  };
+};
+
 interface IContentType {
   id: string;
   title: string;
   variant?: SchemaVariant;
 }
 
-export class SchemaSettingsComponent extends React.PureComponent<PrimeFieldProps> {
+export class SchemaSettingsComponent extends React.PureComponent<Props> {
   public render() {
-    const { form, stores, field } = this.props;
-    const { options } = field;
+    const { form, stores, options } = this.props;
 
     return (
       <>
